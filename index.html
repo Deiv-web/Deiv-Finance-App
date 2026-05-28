@@ -10,468 +10,103 @@
 <meta name="description" content="Personal finance tracker — expenses and gains">
 <link rel="manifest" href="manifest.json">
 <title>My Finances</title>
-
 <style>
 :root {
-  --bg: #0f0f0f;
-  --bg2: #1a1a1a;
-  --bg3: #242424;
-  --border: rgba(255,255,255,0.08);
-  --border2: rgba(255,255,255,0.14);
-  --text: #f0f0f0;
-  --text2: #999;
-  --text3: #666;
-  --green: #4ade80;
-  --green-bg: rgba(74,222,128,0.12);
-  --red: #f87171;
-  --red-bg: rgba(248,113,113,0.12);
-  --accent: #e8e8e8;
-  --radius: 14px;
-  --radius-sm: 9px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0f0f0;--text2:#999;--text3:#666;
+  --green:#4ade80;--green-bg:rgba(74,222,128,0.12);
+  --red:#f87171;--red-bg:rgba(248,113,113,0.12);
+  --accent:#e8e8e8;--radius:14px;--radius-sm:9px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-html, body {
-  height: 100%;
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  font-size: 16px;
-  overscroll-behavior: none;
-}
-
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-/* Header */
-.header {
-  background: var(--bg);
-  border-bottom: 0.5px solid var(--border);
-  padding: calc(var(--safe-top) + 14px) 16px 0;
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 20;
-}
-.header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.app-name {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.3px;
-}
-.header-count {
-  font-size: 13px;
-  color: var(--text3);
-}
-
-/* Tabs */
-.tabs {
-  display: flex;
-  gap: 0;
-}
-.tab {
-  flex: 1;
-  padding: 10px 4px;
-  font-size: 13px;
-  font-weight: 500;
-  border: none;
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  font-family: inherit;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
-  letter-spacing: 0.01em;
-}
-.tab.active {
-  color: var(--text);
-  border-bottom-color: var(--accent);
-}
-
-/* Scrollable content */
-.content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 16px calc(var(--safe-bottom) + 16px);
-  -webkit-overflow-scrolling: touch;
-}
-.content.hidden { display: none; }
-
-/* Cards */
-.card {
-  background: var(--bg2);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-  margin-bottom: 12px;
-}
-
-/* Form */
-.field { margin-bottom: 14px; }
-.field:last-child { margin-bottom: 0; }
-.label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 7px;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="date"],
-select,
-textarea {
-  width: 100%;
-  padding: 11px 13px;
-  background: var(--bg3);
-  border: 0.5px solid var(--border2);
-  border-radius: var(--radius-sm);
-  font-size: 16px;
-  color: var(--text);
-  font-family: inherit;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-}
-input:focus, select:focus, textarea:focus {
-  border-color: rgba(255,255,255,0.3);
-}
-textarea { resize: none; height: 72px; line-height: 1.5; }
-select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 36px;
-}
-input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(0.5);
-}
-
-/* Type toggle */
-.type-toggle {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.type-btn {
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  border: 0.5px solid var(--border2);
-  background: var(--bg3);
-  color: var(--text2);
-  font-size: 15px;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-}
-.type-btn.active-expense {
-  background: var(--red-bg);
-  border-color: rgba(248,113,113,0.35);
-  color: var(--red);
-}
-.type-btn.active-gain {
-  background: var(--green-bg);
-  border-color: rgba(74,222,128,0.35);
-  color: var(--green);
-}
-
-/* Amount + Currency row */
-.split-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
-.split-row .field:last-child { width: 100px; }
-
-/* Tags */
-.tags-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 10px;
-  min-height: 20px;
-}
-.tag-chip {
-  padding: 6px 12px;
-  border-radius: 99px;
-  font-size: 13px;
-  border: 0.5px solid var(--border2);
-  background: var(--bg3);
-  color: var(--text2);
-  cursor: pointer;
-  transition: all 0.12s;
-  user-select: none;
-}
-.tag-chip.on {
-  background: rgba(232,232,232,0.12);
-  border-color: rgba(232,232,232,0.35);
-  color: var(--accent);
-}
-.empty-tags {
-  font-size: 13px;
-  color: var(--text3);
-  font-style: italic;
-}
-
-.inline-row { display: flex; gap: 8px; }
-.inline-row input { flex: 1; }
-.add-btn {
-  padding: 11px 14px;
-  background: var(--bg3);
-  border: 0.5px solid var(--border2);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  color: var(--text2);
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all 0.12s;
-}
-.add-btn:hover, .add-btn:active { border-color: rgba(255,255,255,0.3); color: var(--text); }
-
-/* Submit button */
-.submit-btn {
-  width: 100%;
-  padding: 15px;
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  letter-spacing: -0.2px;
-  transition: opacity 0.15s, transform 0.1s;
-  margin-top: 4px;
-}
-.submit-btn:active { transform: scale(0.98); opacity: 0.85; }
-
-/* Stats grid */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.stat-box {
-  background: var(--bg2);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-}
-.stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
-.stat-val { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.c-green { color: var(--green); }
-.c-red { color: var(--red); }
-
-/* Filters */
-.filter-bar {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 14px;
-  align-items: center;
-}
-.filter-bar select {
-  flex: 1;
-  font-size: 14px;
-  padding: 9px 32px 9px 11px;
-}
-.export-btn {
-  padding: 9px 13px;
-  background: var(--bg2);
-  border: 0.5px solid var(--border2);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  color: var(--text2);
-  cursor: pointer;
-  font-family: inherit;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all 0.12s;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.export-btn:active { opacity: 0.7; }
-
-/* Entry cards */
-.entry {
-  background: var(--bg2);
-  border: 0.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  margin-bottom: 10px;
-}
-.entry-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-.entry-desc {
-  font-size: 15px;
-  font-weight: 500;
-  flex: 1;
-  line-height: 1.3;
-}
-.entry-amt {
-  font-size: 16px;
-  font-weight: 600;
-  white-space: nowrap;
-  letter-spacing: -0.3px;
-}
-.entry-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.entry-date { font-size: 12px; color: var(--text3); }
-.entry-tag-chip {
-  font-size: 11px;
-  padding: 2px 9px;
-  border-radius: 99px;
-  background: var(--bg3);
-  color: var(--text3);
-  border: 0.5px solid var(--border);
-}
-.del-btn {
-  margin-top: 10px;
-  padding: 6px 12px;
-  font-size: 12px;
-  border: 0.5px solid var(--border2);
-  border-radius: 7px;
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.12s;
-}
-.del-btn:active { border-color: var(--red); color: var(--red); }
-
-/* Tags management */
-.tag-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 0;
-  border-bottom: 0.5px solid var(--border);
-}
-.tag-row:last-child { border-bottom: none; }
-.tag-row-name { font-size: 15px; }
-.tag-del {
-  padding: 4px 10px;
-  font-size: 12px;
-  border: 0.5px solid var(--border2);
-  border-radius: 7px;
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  font-family: inherit;
-}
-.tag-del:active { border-color: var(--red); color: var(--red); }
-
-/* Empty state */
-.empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--text3);
-}
-.empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
-.empty-msg { font-size: 15px; }
-
-/* Toast */
-.toast {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + 24px);
-  left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: var(--accent);
-  color: #000;
-  padding: 10px 20px;
-  border-radius: 99px;
-  font-size: 14px;
-  font-weight: 500;
-  z-index: 100;
-  opacity: 0;
-  transition: opacity 0.2s, transform 0.2s;
-  pointer-events: none;
-  white-space: nowrap;
-  max-width: 90vw;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Section title */
-.section-title {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 12px;
-}
-
-/* Install banner */
-.install-banner {
-  background: var(--bg2);
-  border: 0.5px solid var(--border2);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.install-text { font-size: 13px; color: var(--text2); line-height: 1.4; flex: 1; }
-.install-text strong { color: var(--text); display: block; margin-bottom: 2px; font-size: 14px; }
-.install-actions { display: flex; gap: 6px; flex-shrink: 0; }
-.install-btn {
-  padding: 7px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-family: inherit;
-  cursor: pointer;
-  border: 0.5px solid var(--border2);
-  background: var(--accent);
-  color: #000;
-  font-weight: 500;
-}
-.install-dismiss {
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-family: inherit;
-  cursor: pointer;
-  border: 0.5px solid var(--border2);
-  background: transparent;
-  color: var(--text3);
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:16px;overscroll-behavior:none}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:500px;margin:0 auto}
+.header{background:var(--bg);border-bottom:0.5px solid var(--border);padding:calc(var(--safe-top) + 14px) 16px 0;flex-shrink:0;position:sticky;top:0;z-index:20}
+.header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.app-name{font-size:20px;font-weight:600;letter-spacing:-0.3px}
+.header-count{font-size:13px;color:var(--text3)}
+.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:64px;padding:10px 4px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;letter-spacing:.01em;white-space:nowrap}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.content{flex:1;overflow-y:auto;padding:16px 16px calc(var(--safe-bottom) + 16px);-webkit-overflow-scrolling:touch}
+.content.hidden{display:none}
+.card{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.label{display:block;font-size:12px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px}
+input[type="text"],input[type="number"],input[type="date"],select,textarea{width:100%;padding:11px 13px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:16px;color:var(--text);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none}
+input:focus,select:focus,textarea:focus{border-color:rgba(255,255,255,.3)}
+textarea{resize:none;height:72px;line-height:1.5}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5)}
+.type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.type-btn{padding:12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.type-btn.active-expense{background:var(--red-bg);border-color:rgba(248,113,113,.35);color:var(--red)}
+.type-btn.active-gain{background:var(--green-bg);border-color:rgba(74,222,128,.35);color:var(--green)}
+.split-row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.split-row .field:last-child{width:100px}
+.tags-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:20px}
+.tag-chip{padding:6px 12px;border-radius:99px;font-size:13px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .12s;user-select:none}
+.tag-chip.on{background:rgba(232,232,232,.12);border-color:rgba(232,232,232,.35);color:var(--accent)}
+.empty-tags{font-size:13px;color:var(--text3);font-style:italic}
+.inline-row{display:flex;gap:8px}
+.inline-row input{flex:1}
+.add-btn{padding:11px 14px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .12s}
+.add-btn:active{border-color:rgba(255,255,255,.3);color:var(--text)}
+.submit-btn{width:100%;padding:15px;background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:-.2px;transition:opacity .15s,transform .1s;margin-top:4px}
+.submit-btn:active{transform:scale(.98);opacity:.85}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.stat-val{font-size:18px;font-weight:600;letter-spacing:-.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.c-green{color:var(--green)}.c-red{color:var(--red)}
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.filter-bar select{flex:1;font-size:14px;padding:9px 32px 9px 11px}
+.export-btn{padding:9px 13px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .12s;display:flex;align-items:center;gap:5px}
+.export-btn:active{opacity:.7}
+.entry{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.entry-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}
+.entry-desc{font-size:15px;font-weight:500;flex:1;line-height:1.3}
+.entry-amt{font-size:16px;font-weight:600;white-space:nowrap;letter-spacing:-.3px}
+.entry-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.entry-date{font-size:12px;color:var(--text3)}
+.entry-tag-chip{font-size:11px;padding:2px 9px;border-radius:99px;background:var(--bg3);color:var(--text3);border:0.5px solid var(--border)}
+.del-btn{margin-top:10px;padding:6px 12px;font-size:12px;border:0.5px solid var(--border2);border-radius:7px;background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;transition:all .12s}
+.del-btn:active{border-color:var(--red);color:var(--red)}
+.tag-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:0.5px solid var(--border)}
+.tag-row:last-child{border-bottom:none}
+.tag-row-name{font-size:15px}
+.tag-del{padding:4px 10px;font-size:12px;border:0.5px solid var(--border2);border-radius:7px;background:transparent;color:var(--text3);cursor:pointer;font-family:inherit}
+.tag-del:active{border-color:var(--red);color:var(--red)}
+.empty{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:.5}
+.empty-msg{font-size:15px}
+.toast{position:fixed;bottom:calc(var(--safe-bottom) + 24px);left:50%;transform:translateX(-50%) translateY(10px);background:var(--accent);color:#000;padding:10px 20px;border-radius:99px;font-size:14px;font-weight:500;z-index:100;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.section-title{font-size:12px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
+.install-banner{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--radius);padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.install-text{font-size:13px;color:var(--text2);line-height:1.4;flex:1}
+.install-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:14px}
+.install-actions{display:flex;gap:6px;flex-shrink:0}
+.install-btn{padding:7px 12px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;border:0.5px solid var(--border2);background:var(--accent);color:#000;font-weight:500}
+.install-dismiss{padding:7px 10px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text3)}
+/* Charts tab */
+.chart-controls{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.chart-controls select{flex:1;min-width:100px;font-size:14px;padding:9px 32px 9px 11px}
+.chart-title{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:12px;letter-spacing:-.1px}
+.chart-wrap{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+.chart-canvas-wrap{position:relative;width:100%;height:260px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.no-data{text-align:center;padding:40px 16px;color:var(--text3);font-size:14px}
 </style>
 </head>
 <body>
-
 <div class="app">
   <div class="header">
     <div class="header-row">
@@ -481,24 +116,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     <div class="tabs">
       <button class="tab active" data-tab="add" onclick="switchTab('add',this)">Add</button>
       <button class="tab" data-tab="list" onclick="switchTab('list',this)">Transactions</button>
+      <button class="tab" data-tab="charts" onclick="switchTab('charts',this)">Charts</button>
       <button class="tab" data-tab="tags" onclick="switchTab('tags',this)">Tags</button>
     </div>
   </div>
 
   <!-- ADD TAB -->
   <div class="content" id="tab-add">
-
     <div id="install-banner" class="install-banner" style="display:none">
-      <div class="install-text">
-        <strong>Add to Home Screen</strong>
-        Use this app offline from your phone
-      </div>
+      <div class="install-text"><strong>Add to Home Screen</strong>Use this app offline from your phone</div>
       <div class="install-actions">
-        <button class="install-btn" id="install-btn" onclick="installPWA()">Install</button>
+        <button class="install-btn" onclick="installPWA()">Install</button>
         <button class="install-dismiss" onclick="dismissInstall()">✕</button>
       </div>
     </div>
-
     <div class="card">
       <div class="field">
         <span class="label">Type</span>
@@ -507,7 +138,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
           <button class="type-btn" id="btn-gain" onclick="setType('gain')">📈 Gain</button>
         </div>
       </div>
-
       <div class="split-row">
         <div class="field">
           <label class="label" for="f-amount">Amount</label>
@@ -516,37 +146,22 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         <div class="field">
           <label class="label" for="f-currency">Currency</label>
           <select id="f-currency">
-            <option value="EUR">EUR</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="CHF">CHF</option>
-            <option value="JPY">JPY</option>
-            <option value="CAD">CAD</option>
-            <option value="AUD">AUD</option>
-            <option value="SEK">SEK</option>
-            <option value="NOK">NOK</option>
-            <option value="DKK">DKK</option>
-            <option value="PLN">PLN</option>
-            <option value="CZK">CZK</option>
-            <option value="HUF">HUF</option>
-            <option value="CNY">CNY</option>
-            <option value="INR">INR</option>
-            <option value="BRL">BRL</option>
+            <option>EUR</option><option>USD</option><option>GBP</option><option>CHF</option>
+            <option>JPY</option><option>CAD</option><option>AUD</option><option>SEK</option>
+            <option>NOK</option><option>DKK</option><option>PLN</option><option>CZK</option>
+            <option>HUF</option><option>CNY</option><option>INR</option><option>BRL</option>
           </select>
         </div>
       </div>
-
       <div class="field">
         <label class="label" for="f-desc">Description</label>
         <textarea id="f-desc" placeholder="What is this for?"></textarea>
       </div>
-
       <div class="field">
         <label class="label" for="f-date">Date</label>
         <input type="date" id="f-date">
       </div>
     </div>
-
     <div class="card">
       <div class="section-title">Tags</div>
       <div class="tags-wrap" id="tag-selector"></div>
@@ -555,31 +170,17 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         <button class="add-btn" onclick="addQuickTag()">+ Add</button>
       </div>
     </div>
-
     <button class="submit-btn" onclick="saveEntry()">Save Entry</button>
   </div>
 
   <!-- LIST TAB -->
   <div class="content hidden" id="tab-list">
     <div class="stats-grid">
-      <div class="stat-box">
-        <div class="stat-label">Gains</div>
-        <div class="stat-val c-green" id="s-gain">—</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Expenses</div>
-        <div class="stat-val c-red" id="s-exp">—</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Net balance</div>
-        <div class="stat-val" id="s-net">—</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Entries</div>
-        <div class="stat-val" id="s-count">0</div>
-      </div>
+      <div class="stat-box"><div class="stat-label">Gains</div><div class="stat-val c-green" id="s-gain">—</div></div>
+      <div class="stat-box"><div class="stat-label">Expenses</div><div class="stat-val c-red" id="s-exp">—</div></div>
+      <div class="stat-box"><div class="stat-label">Net balance</div><div class="stat-val" id="s-net">—</div></div>
+      <div class="stat-box"><div class="stat-label">Entries</div><div class="stat-val" id="s-count">0</div></div>
     </div>
-
     <div class="filter-bar">
       <select id="f-type" onchange="renderList()">
         <option value="">All types</option>
@@ -591,8 +192,44 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       </select>
       <button class="export-btn" onclick="exportExcel()">⬇ Excel</button>
     </div>
-
     <div id="entries"></div>
+  </div>
+
+  <!-- CHARTS TAB -->
+  <div class="content hidden" id="tab-charts">
+    <!-- Pie: expenses by tag -->
+    <div class="chart-wrap">
+      <div class="chart-title">Expenses by tag</div>
+      <div class="chart-controls">
+        <select id="pie-currency" onchange="renderCharts()">
+          <option value="">All currencies</option>
+        </select>
+      </div>
+      <div id="pie-wrap">
+        <div class="chart-canvas-wrap"><canvas id="pie-chart"></canvas></div>
+        <div class="legend" id="pie-legend"></div>
+      </div>
+      <div id="pie-nodata" class="no-data" style="display:none">No tagged expenses yet</div>
+    </div>
+
+    <!-- Bar: income vs expenses by period -->
+    <div class="chart-wrap">
+      <div class="chart-title">Income vs Expenses</div>
+      <div class="chart-controls">
+        <select id="bar-period" onchange="renderCharts()">
+          <option value="month">By month</option>
+          <option value="week">By week</option>
+          <option value="year">By year</option>
+        </select>
+        <select id="bar-currency" onchange="renderCharts()">
+          <option value="">All currencies</option>
+        </select>
+      </div>
+      <div id="bar-wrap">
+        <div class="chart-canvas-wrap"><canvas id="bar-chart"></canvas></div>
+      </div>
+      <div id="bar-nodata" class="no-data" style="display:none">No entries yet</div>
+    </div>
   </div>
 
   <!-- TAGS TAB -->
@@ -613,180 +250,156 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 <div class="toast" id="toast"></div>
 
-<!-- SheetJS for Excel export (cached by SW for offline use) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 // ── State ──────────────────────────────────────────────
-const STORAGE_KEY = 'ft_data_v1';
-let st = { entries: [], tags: [], type: 'expense', selTags: [] };
+const STORAGE_KEY='ft_data_v1';
+let st={entries:[],tags:[],type:'expense',selTags:[]};
+let pieChart=null,barChart=null;
 
-function load() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) { const d = JSON.parse(raw); st.entries = d.entries||[]; st.tags = d.tags||[]; }
-  } catch(e) {}
+const PIE_COLORS=['#f87171','#fb923c','#fbbf24','#4ade80','#34d399','#60a5fa','#a78bfa','#f472b6','#94a3b8','#2dd4bf','#e879f9','#facc15'];
+
+function load(){
+  try{const r=localStorage.getItem(STORAGE_KEY);if(r){const d=JSON.parse(r);st.entries=d.entries||[];st.tags=d.tags||[];}}catch(e){}
 }
-function save() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ entries: st.entries, tags: st.tags })); } catch(e) {}
+function save(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify({entries:st.entries,tags:st.tags}));}catch(e){}
 }
 
 // ── Toast ──────────────────────────────────────────────
-let _toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+let _tt;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2200);
 }
 
 // ── Tabs ──────────────────────────────────────────────
-function switchTab(tab, btn) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['add','list','tags'].forEach(t => {
-    document.getElementById('tab-'+t).classList.toggle('hidden', t !== tab);
+  ['add','list','charts','tags'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('hidden',t!==tab);
   });
-  if (tab === 'list') { renderStats(); renderList(); }
-  if (tab === 'tags') { renderTagsList(); }
+  if(tab==='list'){renderStats();renderList();}
+  if(tab==='charts'){renderCurrencySelects();renderCharts();}
+  if(tab==='tags'){renderTagsList();}
 }
 
-// ── Type toggle ──────────────────────────────────────
-function setType(t) {
-  st.type = t;
-  document.getElementById('btn-expense').className = 'type-btn' + (t==='expense'?' active-expense':'');
-  document.getElementById('btn-gain').className = 'type-btn' + (t==='gain'?' active-gain':'');
+// ── Type toggle ────────────────────────────────────────
+function setType(t){
+  st.type=t;
+  document.getElementById('btn-expense').className='type-btn'+(t==='expense'?' active-expense':'');
+  document.getElementById('btn-gain').className='type-btn'+(t==='gain'?' active-gain':'');
 }
 
-// ── Tags ─────────────────────────────────────────────
-function renderTagSelector() {
-  const el = document.getElementById('tag-selector');
-  if (!st.tags.length) {
-    el.innerHTML = '<span class="empty-tags">No tags yet — create one below or in the Tags tab.</span>';
-    return;
-  }
-  el.innerHTML = st.tags.map(t => {
-    const on = st.selTags.includes(t);
-    return `<span class="tag-chip ${on?'on':''}" onclick="toggleTag(this,'${esc(t)}')">${on?'✓ ':''}${t}</span>`;
+// ── Tags ──────────────────────────────────────────────
+function renderTagSelector(){
+  const el=document.getElementById('tag-selector');
+  if(!st.tags.length){el.innerHTML='<span class="empty-tags">No tags yet — create one below or in the Tags tab.</span>';return;}
+  el.innerHTML=st.tags.map(t=>{
+    const on=st.selTags.includes(t);
+    return`<span class="tag-chip ${on?'on':''}" onclick="toggleTag('${esc(t)}')">${on?'✓ ':''}${t}</span>`;
   }).join('');
 }
-function toggleTag(el, tag) {
-  const i = st.selTags.indexOf(tag);
-  if (i>-1) st.selTags.splice(i,1); else st.selTags.push(tag);
+function toggleTag(tag){
+  const i=st.selTags.indexOf(tag);
+  if(i>-1)st.selTags.splice(i,1);else st.selTags.push(tag);
   renderTagSelector();
 }
-function addQuickTag() {
-  const inp = document.getElementById('quick-tag');
-  const v = inp.value.trim();
-  if (!v) return;
-  if (st.tags.includes(v)) { toast('Tag already exists'); return; }
-  st.tags.push(v); st.selTags.push(v);
-  inp.value = ''; save();
-  renderTagSelector(); renderTagsList(); renderFilterTag();
+function addQuickTag(){
+  const inp=document.getElementById('quick-tag');const v=inp.value.trim();
+  if(!v)return;if(st.tags.includes(v)){toast('Tag already exists');return;}
+  st.tags.push(v);st.selTags.push(v);inp.value='';save();
+  renderTagSelector();renderTagsList();renderFilterTag();
   toast(`Tag "${v}" created & selected`);
 }
-function createTag() {
-  const inp = document.getElementById('new-tag');
-  const v = inp.value.trim();
-  if (!v) return;
-  if (st.tags.includes(v)) { toast('Tag already exists'); return; }
-  st.tags.push(v); inp.value = ''; save();
-  renderTagsList(); renderTagSelector(); renderFilterTag();
+function createTag(){
+  const inp=document.getElementById('new-tag');const v=inp.value.trim();
+  if(!v)return;if(st.tags.includes(v)){toast('Tag already exists');return;}
+  st.tags.push(v);inp.value='';save();
+  renderTagsList();renderTagSelector();renderFilterTag();
   toast(`Tag "${v}" created`);
 }
-function deleteTag(tag) {
-  if (!confirm(`Delete tag "${tag}"?\nIt will be removed from all entries.`)) return;
-  st.tags = st.tags.filter(t=>t!==tag);
-  st.entries = st.entries.map(e=>({...e, tags: e.tags.filter(t=>t!==tag)}));
-  st.selTags = st.selTags.filter(t=>t!==tag);
-  save(); renderTagsList(); renderTagSelector(); renderFilterTag(); renderList();
+function deleteTag(tag){
+  if(!confirm(`Delete tag "${tag}"?\nIt will be removed from all entries.`))return;
+  st.tags=st.tags.filter(t=>t!==tag);
+  st.entries=st.entries.map(e=>({...e,tags:e.tags.filter(t=>t!==tag)}));
+  st.selTags=st.selTags.filter(t=>t!==tag);
+  save();renderTagsList();renderTagSelector();renderFilterTag();renderList();
   toast(`Tag "${tag}" deleted`);
 }
-function renderTagsList() {
-  const el = document.getElementById('tags-list');
-  if (!st.tags.length) { el.innerHTML = '<p style="font-size:14px;color:var(--text3);padding:4px 0">No tags yet.</p>'; return; }
-  el.innerHTML = st.tags.map(t => `
+function renderTagsList(){
+  const el=document.getElementById('tags-list');
+  if(!st.tags.length){el.innerHTML='<p style="font-size:14px;color:var(--text3);padding:4px 0">No tags yet.</p>';return;}
+  el.innerHTML=st.tags.map(t=>`
     <div class="tag-row">
       <span class="tag-row-name">${t}</span>
       <button class="tag-del" onclick="deleteTag('${esc(t)}')">Delete</button>
     </div>`).join('');
 }
-function renderFilterTag() {
-  const sel = document.getElementById('f-tag');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">All tags</option>' + st.tags.map(t=>`<option value="${t}">${t}</option>`).join('');
-  if (st.tags.includes(cur)) sel.value = cur;
+function renderFilterTag(){
+  const sel=document.getElementById('f-tag');const cur=sel.value;
+  sel.innerHTML='<option value="">All tags</option>'+st.tags.map(t=>`<option value="${t}">${t}</option>`).join('');
+  if(st.tags.includes(cur))sel.value=cur;
 }
 
-// ── Entry save ────────────────────────────────────────
-function saveEntry() {
-  const amount = parseFloat(document.getElementById('f-amount').value);
-  const currency = document.getElementById('f-currency').value;
-  const desc = document.getElementById('f-desc').value.trim();
-  const date = document.getElementById('f-date').value;
-  if (!amount || amount <= 0) { toast('Enter a valid amount'); return; }
-  if (!desc) { toast('Enter a description'); return; }
-  if (!date) { toast('Select a date'); return; }
-  st.entries.unshift({ id: Date.now().toString(), type: st.type, amount, currency, description: desc, date, tags: [...st.selTags] });
+// ── Entry save ─────────────────────────────────────────
+function saveEntry(){
+  const amount=parseFloat(document.getElementById('f-amount').value);
+  const currency=document.getElementById('f-currency').value;
+  const desc=document.getElementById('f-desc').value.trim();
+  const date=document.getElementById('f-date').value;
+  if(!amount||amount<=0){toast('Enter a valid amount');return;}
+  if(!desc){toast('Enter a description');return;}
+  if(!date){toast('Select a date');return;}
+  st.entries.unshift({id:Date.now().toString(),type:st.type,amount,currency,description:desc,date,tags:[...st.selTags]});
   save();
-  document.getElementById('f-amount').value = '';
-  document.getElementById('f-desc').value = '';
-  document.getElementById('f-date').value = today();
-  st.selTags = [];
-  renderTagSelector(); updateHeaderCount();
-  toast(`${st.type === 'expense' ? 'Expense' : 'Gain'} saved ✓`);
+  document.getElementById('f-amount').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-date').value=today();
+  st.selTags=[];
+  renderTagSelector();updateHeaderCount();
+  toast(`${st.type==='expense'?'Expense':'Gain'} saved ✓`);
 }
-function deleteEntry(id) {
-  if (!confirm('Delete this entry?')) return;
-  st.entries = st.entries.filter(e=>e.id!==id);
-  save(); renderList(); renderStats(); updateHeaderCount();
+function deleteEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  st.entries=st.entries.filter(e=>e.id!==id);
+  save();renderList();renderStats();updateHeaderCount();
   toast('Entry deleted');
 }
 
-// ── Stats ─────────────────────────────────────────────
-function renderStats() {
-  const gains = st.entries.filter(e=>e.type==='gain');
-  const exps  = st.entries.filter(e=>e.type==='expense');
-
-  function sumByCur(arr) {
-    const m={};
-    arr.forEach(e=>{m[e.currency]=(m[e.currency]||0)+e.amount;});
-    return m;
-  }
-  function fmtMap(m) {
-    const parts = Object.entries(m).map(([c,v])=>fmtAmt(v,c));
-    return parts.length ? parts.join('\n') : '—';
-  }
-
-  document.getElementById('s-gain').textContent  = fmtMap(sumByCur(gains));
-  document.getElementById('s-exp').textContent   = fmtMap(sumByCur(exps));
-  document.getElementById('s-count').textContent = st.entries.length;
-
-  const netEl = document.getElementById('s-net');
-  if (!st.entries.length) { netEl.textContent='—'; netEl.className='stat-val'; return; }
+// ── Stats ──────────────────────────────────────────────
+function renderStats(){
+  const gains=st.entries.filter(e=>e.type==='gain');
+  const exps=st.entries.filter(e=>e.type==='expense');
+  function sumByCur(arr){const m={};arr.forEach(e=>{m[e.currency]=(m[e.currency]||0)+e.amount;});return m;}
+  function fmtMap(m){const p=Object.entries(m).map(([c,v])=>fmtAmt(v,c));return p.length?p.join('\n'):'—';}
+  document.getElementById('s-gain').textContent=fmtMap(sumByCur(gains));
+  document.getElementById('s-exp').textContent=fmtMap(sumByCur(exps));
+  document.getElementById('s-count').textContent=st.entries.length;
+  const netEl=document.getElementById('s-net');
+  if(!st.entries.length){netEl.textContent='—';netEl.className='stat-val';return;}
   const netMap={};
   st.entries.forEach(e=>{netMap[e.currency]=(netMap[e.currency]||0)+(e.type==='gain'?e.amount:-e.amount);});
-  const netStr = Object.entries(netMap).map(([c,v])=>(v>=0?'+':'')+fmtAmt(v,c)).join('\n');
-  netEl.textContent = netStr;
-  const allPos = Object.values(netMap).every(v=>v>=0);
-  const allNeg = Object.values(netMap).every(v=>v<0);
-  netEl.className = 'stat-val' + (allPos?' c-green':allNeg?' c-red':'');
+  const netStr=Object.entries(netMap).map(([c,v])=>(v>=0?'+':'')+fmtAmt(v,c)).join('\n');
+  netEl.textContent=netStr;
+  const allPos=Object.values(netMap).every(v=>v>=0);
+  const allNeg=Object.values(netMap).every(v=>v<0);
+  netEl.className='stat-val'+(allPos?' c-green':allNeg?' c-red':'');
 }
 
-// ── List ──────────────────────────────────────────────
-function renderList() {
-  const ft = document.getElementById('f-type').value;
-  const fg = document.getElementById('f-tag').value;
-  let list = st.entries;
-  if (ft) list = list.filter(e=>e.type===ft);
-  if (fg) list = list.filter(e=>e.tags.includes(fg));
-  const el = document.getElementById('entries');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">🗒</div><div class="empty-msg">No entries found</div></div>';
-    return;
-  }
-  el.innerHTML = list.map(e=>`
+// ── List ───────────────────────────────────────────────
+function renderList(){
+  const ft=document.getElementById('f-type').value;
+  const fg=document.getElementById('f-tag').value;
+  let list=st.entries;
+  if(ft)list=list.filter(e=>e.type===ft);
+  if(fg)list=list.filter(e=>e.tags.includes(fg));
+  const el=document.getElementById('entries');
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-icon">🗒</div><div class="empty-msg">No entries found</div></div>';return;}
+  el.innerHTML=list.map(e=>`
     <div class="entry">
       <div class="entry-top">
         <span class="entry-desc">${e.description}</span>
@@ -800,103 +413,235 @@ function renderList() {
     </div>`).join('');
 }
 
-// ── Export ────────────────────────────────────────────
-function exportExcel() {
-  if (!st.entries.length) { toast('No entries to export'); return; }
-  if (typeof XLSX === 'undefined') { toast('Excel library not loaded yet'); return; }
+// ── Charts ─────────────────────────────────────────────
+function renderCurrencySelects(){
+  const currencies=['<option value="">All currencies</option>',
+    ...[...new Set(st.entries.map(e=>e.currency))].map(c=>`<option value="${c}">${c}</option>`)
+  ].join('');
+  document.getElementById('pie-currency').innerHTML=currencies;
+  document.getElementById('bar-currency').innerHTML=currencies;
+}
 
-  const wb = XLSX.utils.book_new();
+function renderCharts(){
+  renderPieChart();
+  renderBarChart();
+}
 
-  // Sheet 1: all transactions
-  const rows = st.entries.map(e=>({
-    Date: e.date,
-    Type: e.type==='gain'?'Gain':'Expense',
-    Description: e.description,
-    Amount: e.type==='expense'?-e.amount:e.amount,
-    Currency: e.currency,
-    Tags: e.tags.join(', ')
-  }));
-  const ws1 = XLSX.utils.json_to_sheet(rows);
-  ws1['!cols'] = [{wch:12},{wch:10},{wch:35},{wch:12},{wch:10},{wch:25}];
-  XLSX.utils.book_append_sheet(wb, ws1, 'Transactions');
+function renderPieChart(){
+  const cur=document.getElementById('pie-currency').value;
+  let expenses=st.entries.filter(e=>e.type==='expense'&&e.tags.length>0);
+  if(cur)expenses=expenses.filter(e=>e.currency===cur);
 
-  // Sheet 2: summary by currency
-  const currencies = [...new Set(st.entries.map(e=>e.currency))];
-  const sum2 = currencies.map(c=>{
-    const g = st.entries.filter(e=>e.currency===c&&e.type==='gain').reduce((s,e)=>s+e.amount,0);
-    const x = st.entries.filter(e=>e.currency===c&&e.type==='expense').reduce((s,e)=>s+e.amount,0);
-    return { Currency:c, 'Total Gains':g, 'Total Expenses':x, 'Net Balance':g-x };
-  });
-  const ws2 = XLSX.utils.json_to_sheet(sum2);
-  ws2['!cols'] = [{wch:12},{wch:16},{wch:18},{wch:16}];
-  XLSX.utils.book_append_sheet(wb, ws2, 'By Currency');
+  if(!expenses.length){
+    document.getElementById('pie-wrap').style.display='none';
+    document.getElementById('pie-nodata').style.display='block';
+    if(pieChart){pieChart.destroy();pieChart=null;}
+    return;
+  }
+  document.getElementById('pie-wrap').style.display='block';
+  document.getElementById('pie-nodata').style.display='none';
 
-  // Sheet 3: summary by tag
-  if (st.tags.length) {
-    const sum3 = st.tags.map(tag=>{
-      const te = st.entries.filter(e=>e.tags.includes(tag));
-      const g = te.filter(e=>e.type==='gain').reduce((s,e)=>s+e.amount,0);
-      const x = te.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
-      return { Tag:tag, Entries:te.length, Gains:g, Expenses:x, Net:g-x };
+  // aggregate by tag
+  const tagTotals={};
+  expenses.forEach(e=>{
+    e.tags.forEach(t=>{
+      tagTotals[t]=(tagTotals[t]||0)+e.amount;
     });
-    const ws3 = XLSX.utils.json_to_sheet(sum3);
-    ws3['!cols'] = [{wch:20},{wch:10},{wch:14},{wch:14},{wch:14}];
-    XLSX.utils.book_append_sheet(wb, ws3, 'By Tag');
+  });
+  const labels=Object.keys(tagTotals);
+  const data=Object.values(tagTotals);
+  const colors=labels.map((_,i)=>PIE_COLORS[i%PIE_COLORS.length]);
+
+  const ctx=document.getElementById('pie-chart').getContext('2d');
+  if(pieChart)pieChart.destroy();
+  pieChart=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderColor:'#0f0f0f',borderWidth:2,hoverOffset:6}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{
+        const total=ctx.dataset.data.reduce((a,b)=>a+b,0);
+        const pct=((ctx.parsed/total)*100).toFixed(1);
+        return` ${ctx.label}: ${ctx.parsed.toFixed(2)} (${pct}%)`;
+      }}}}
+    }
+  });
+
+  // custom legend
+  document.getElementById('pie-legend').innerHTML=labels.map((l,i)=>`
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${colors[i]}"></div>
+      <span>${l}: ${data[i].toFixed(2)}</span>
+    </div>`).join('');
+}
+
+function renderBarChart(){
+  const period=document.getElementById('bar-period').value;
+  const cur=document.getElementById('bar-currency').value;
+  let entries=st.entries;
+  if(cur)entries=entries.filter(e=>e.currency===cur);
+
+  if(!entries.length){
+    document.getElementById('bar-wrap').style.display='none';
+    document.getElementById('bar-nodata').style.display='block';
+    if(barChart){barChart.destroy();barChart=null;}
+    return;
+  }
+  document.getElementById('bar-wrap').style.display='block';
+  document.getElementById('bar-nodata').style.display='none';
+
+  function getKey(date){
+    const d=new Date(date+'T00:00:00');
+    if(period==='year')return`${d.getFullYear()}`;
+    if(period==='month')return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    // week: ISO week
+    const tmp=new Date(d);tmp.setHours(0,0,0,0);
+    tmp.setDate(tmp.getDate()+3-(tmp.getDay()||7)-3+(tmp.getDay()||7));
+    const week=Math.ceil((((tmp-new Date(tmp.getFullYear(),0,1))/86400000)+1)/7);
+    return`${d.getFullYear()}-W${String(week).padStart(2,'0')}`;
   }
 
-  XLSX.writeFile(wb, `finances_${today()}.xlsx`);
+  const gainMap={},expMap={};
+  entries.forEach(e=>{
+    const k=getKey(e.date);
+    if(e.type==='gain')gainMap[k]=(gainMap[k]||0)+e.amount;
+    else expMap[k]=(expMap[k]||0)+e.amount;
+  });
+  const allKeys=[...new Set([...Object.keys(gainMap),...Object.keys(expMap)])].sort();
+  // limit to last 12 periods
+  const keys=allKeys.slice(-12);
+  const gainData=keys.map(k=>+(gainMap[k]||0).toFixed(2));
+  const expData=keys.map(k=>+(expMap[k]||0).toFixed(2));
+
+  function shortLabel(k){
+    if(period==='year')return k;
+    if(period==='month'){const[y,m]=k.split('-');const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return`${mn[parseInt(m)-1]} ${y.slice(2)}`;}
+    return k.replace('-W','W');
+  }
+  const labels=keys.map(shortLabel);
+
+  const ctx=document.getElementById('bar-chart').getContext('2d');
+  if(barChart)barChart.destroy();
+  barChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'Gains',data:gainData,backgroundColor:'rgba(74,222,128,0.75)',borderColor:'#4ade80',borderWidth:1,borderRadius:4},
+        {label:'Expenses',data:expData,backgroundColor:'rgba(248,113,113,0.75)',borderColor:'#f87171',borderWidth:1,borderRadius:4}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#999',font:{size:12},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#666',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}},
+        y:{ticks:{color:'#666',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}}
+      }
+    }
+  });
+}
+
+// ── Export ─────────────────────────────────────────────
+function exportExcel(){
+  if(!st.entries.length){toast('No entries to export');return;}
+  if(typeof XLSX==='undefined'){toast('Excel library not loaded');return;}
+  const wb=XLSX.utils.book_new();
+
+  // Sheet 1: Transactions
+  const rows=st.entries.map(e=>({
+    Date:e.date,Type:e.type==='gain'?'Gain':'Expense',
+    Description:e.description,Amount:e.type==='expense'?-e.amount:e.amount,
+    Currency:e.currency,Tags:e.tags.join(', ')
+  }));
+  const ws1=XLSX.utils.json_to_sheet(rows);
+  ws1['!cols']=[{wch:12},{wch:10},{wch:35},{wch:12},{wch:10},{wch:25}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Transactions');
+
+  // Sheet 2: By Currency
+  const currencies=[...new Set(st.entries.map(e=>e.currency))];
+  const sum2=currencies.map(c=>{
+    const g=st.entries.filter(e=>e.currency===c&&e.type==='gain').reduce((s,e)=>s+e.amount,0);
+    const x=st.entries.filter(e=>e.currency===c&&e.type==='expense').reduce((s,e)=>s+e.amount,0);
+    return{Currency:c,'Total Gains':+g.toFixed(2),'Total Expenses':+x.toFixed(2),'Net Balance':+(g-x).toFixed(2)};
+  });
+  const ws2=XLSX.utils.json_to_sheet(sum2);
+  ws2['!cols']=[{wch:12},{wch:16},{wch:18},{wch:16}];
+  XLSX.utils.book_append_sheet(wb,ws2,'By Currency');
+
+  // Sheet 3: By Tag
+  if(st.tags.length){
+    const sum3=st.tags.map(tag=>{
+      const te=st.entries.filter(e=>e.tags.includes(tag));
+      const g=te.filter(e=>e.type==='gain').reduce((s,e)=>s+e.amount,0);
+      const x=te.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+      return{Tag:tag,Entries:te.length,Gains:+g.toFixed(2),Expenses:+x.toFixed(2),Net:+(g-x).toFixed(2)};
+    });
+    const ws3=XLSX.utils.json_to_sheet(sum3);
+    ws3['!cols']=[{wch:20},{wch:10},{wch:14},{wch:14},{wch:14}];
+    XLSX.utils.book_append_sheet(wb,ws3,'By Tag');
+
+    // Sheet 4: Monthly summary
+    const months=[...new Set(st.entries.map(e=>e.date.slice(0,7)))].sort();
+    const sum4=months.map(m=>{
+      const me=st.entries.filter(e=>e.date.startsWith(m));
+      const g=me.filter(e=>e.type==='gain').reduce((s,e)=>s+e.amount,0);
+      const x=me.filter(e=>e.type==='expense').reduce((s,e)=>s+e.amount,0);
+      return{Month:m,Gains:+g.toFixed(2),Expenses:+x.toFixed(2),Net:+(g-x).toFixed(2)};
+    });
+    const ws4=XLSX.utils.json_to_sheet(sum4);
+    ws4['!cols']=[{wch:12},{wch:14},{wch:14},{wch:14}];
+    XLSX.utils.book_append_sheet(wb,ws4,'By Month');
+  }
+
+  XLSX.writeFile(wb,`finances_${today()}.xlsx`);
   toast('Excel downloaded ✓');
 }
 
-// ── Helpers ───────────────────────────────────────────
-function fmtAmt(v, currency) {
-  try { return new Intl.NumberFormat('it-IT',{style:'currency',currency,maximumFractionDigits:2}).format(Math.abs(v)); }
-  catch(e) { return Math.abs(v).toFixed(2)+' '+currency; }
+// ── Helpers ────────────────────────────────────────────
+function fmtAmt(v,currency){
+  try{return new Intl.NumberFormat('it-IT',{style:'currency',currency,maximumFractionDigits:2}).format(Math.abs(v));}
+  catch(e){return Math.abs(v).toFixed(2)+' '+currency;}
 }
-function fmtDate(d) {
-  try { return new Date(d+'T00:00:00').toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'}); }
-  catch(e) { return d; }
+function fmtDate(d){
+  try{return new Date(d+'T00:00:00').toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'});}
+  catch(e){return d;}
 }
-function today() { return new Date().toISOString().split('T')[0]; }
-function esc(s) { return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
-function updateHeaderCount() {
-  document.getElementById('hdr-count').textContent = st.entries.length ? st.entries.length+' entries' : '';
+function today(){return new Date().toISOString().split('T')[0];}
+function esc(s){return s.replace(/\\/g,'\\\\').replace(/'/g,"\\'");}
+function updateHeaderCount(){
+  document.getElementById('hdr-count').textContent=st.entries.length?st.entries.length+' entries':'';
 }
 
-// ── PWA Install ───────────────────────────────────────
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (!localStorage.getItem('install_dismissed')) {
-    document.getElementById('install-banner').style.display = 'flex';
-  }
+// ── PWA Install ────────────────────────────────────────
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  if(!localStorage.getItem('install_dismissed'))
+    document.getElementById('install-banner').style.display='flex';
 });
-function installPWA() {
-  if (!deferredPrompt) { toast('Use browser menu → "Add to Home Screen"'); return; }
+function installPWA(){
+  if(!deferredPrompt){toast('Use browser menu → "Add to Home Screen"');return;}
   deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(r => {
-    if (r.outcome==='accepted') { dismissInstall(); toast('App installed! ✓'); }
-    deferredPrompt = null;
+  deferredPrompt.userChoice.then(r=>{
+    if(r.outcome==='accepted'){dismissInstall();toast('App installed! ✓');}
+    deferredPrompt=null;
   });
 }
-function dismissInstall() {
-  document.getElementById('install-banner').style.display = 'none';
+function dismissInstall(){
+  document.getElementById('install-banner').style.display='none';
   localStorage.setItem('install_dismissed','1');
 }
-window.addEventListener('appinstalled', () => { dismissInstall(); });
+window.addEventListener('appinstalled',()=>dismissInstall());
 
-// ── Service Worker ────────────────────────────────────
-if ('serviceWorker' in navigator) {
+// ── Service Worker ─────────────────────────────────────
+if('serviceWorker' in navigator)
   navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
 
-// ── Init ──────────────────────────────────────────────
+// ── Init ───────────────────────────────────────────────
 load();
-document.getElementById('f-date').value = today();
-renderTagSelector();
-renderFilterTag();
-updateHeaderCount();
+document.getElementById('f-date').value=today();
+renderTagSelector();renderFilterTag();updateHeaderCount();
 </script>
 </body>
 </html>
