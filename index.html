@@ -17,10 +17,21 @@
   --text:#f0f0f0;--text2:#999;--text3:#666;
   --green:#4ade80;--green-bg:rgba(74,222,128,0.12);
   --red:#f87171;--red-bg:rgba(248,113,113,0.12);
-  --accent:#e8e8e8;--radius:14px;--radius-sm:9px;
+  --accent:#e8e8e8;--accent-text:#000;
+  --radius:14px;--radius-sm:9px;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
+html.light {
+  --bg:#f5f5f5;--bg2:#ffffff;--bg3:#eeeeee;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#111;--text2:#555;--text3:#999;
+  --green:#16a34a;--green-bg:rgba(22,163,74,0.10);
+  --red:#dc2626;--red-bg:rgba(220,38,38,0.10);
+  --accent:#111;--accent-text:#fff;
+}
+.theme-toggle{background:none;border:0.5px solid var(--border2);border-radius:99px;padding:5px 10px;font-size:16px;cursor:pointer;color:var(--text2);line-height:1;transition:border-color .15s;font-family:inherit}
+.theme-toggle:active{opacity:.7}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:16px;overscroll-behavior:none}
 .app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:500px;margin:0 auto}
@@ -41,8 +52,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-
 input[type="text"],input[type="number"],input[type="date"],select,textarea{width:100%;padding:11px 13px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:16px;color:var(--text);font-family:inherit;outline:none;appearance:none;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{border-color:rgba(255,255,255,.3)}
 textarea{resize:none;height:72px;line-height:1.5}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
-input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:var(--date-filter,invert(.5))}
+html.light input[type="date"]::-webkit-calendar-picker-indicator{filter:none}
 .type-toggle{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .type-btn{padding:12px;border-radius:var(--radius-sm);border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
 .type-btn.active-expense{background:var(--red-bg);border-color:rgba(248,113,113,.35);color:var(--red)}
@@ -51,13 +63,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5)}
 .split-row .field:last-child{width:100px}
 .tags-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:20px}
 .tag-chip{padding:6px 12px;border-radius:99px;font-size:13px;border:0.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .12s;user-select:none}
-.tag-chip.on{background:rgba(232,232,232,.12);border-color:rgba(232,232,232,.35);color:var(--accent)}
+.tag-chip.on{background:rgba(100,100,100,.15);border-color:rgba(100,100,100,.4);color:var(--text)}
+html.light .tag-chip.on{background:rgba(17,17,17,.1);border-color:rgba(17,17,17,.3);color:var(--text)}
 .empty-tags{font-size:13px;color:var(--text3);font-style:italic}
 .inline-row{display:flex;gap:8px}
 .inline-row input{flex:1}
 .add-btn{padding:11px 14px;background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;color:var(--text2);cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:all .12s}
 .add-btn:active{border-color:rgba(255,255,255,.3);color:var(--text)}
-.submit-btn{width:100%;padding:15px;background:var(--accent);color:#000;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:-.2px;transition:opacity .15s,transform .1s;margin-top:4px}
+.submit-btn{width:100%;padding:15px;background:var(--accent);color:var(--accent-text);border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;letter-spacing:-.2px;transition:opacity .15s,transform .1s;margin-top:4px}
 .submit-btn:active{transform:scale(.98);opacity:.85}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .stat-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px}
@@ -95,7 +108,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5)}
 .install-text{font-size:13px;color:var(--text2);line-height:1.4;flex:1}
 .install-text strong{color:var(--text);display:block;margin-bottom:2px;font-size:14px}
 .install-actions{display:flex;gap:6px;flex-shrink:0}
-.install-btn{padding:7px 12px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;border:0.5px solid var(--border2);background:var(--accent);color:#000;font-weight:500}
+.install-btn{padding:7px 12px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;border:0.5px solid var(--border2);background:var(--accent);color:var(--accent-text);font-weight:500}
 .install-dismiss{padding:7px 10px;border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text3)}
 /* Charts tab */
 .chart-controls{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
@@ -114,7 +127,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5)}
   <div class="header">
     <div class="header-row">
       <span class="app-name">💰 My Finances</span>
-      <span class="header-count" id="hdr-count"></span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="header-count" id="hdr-count"></span>
+        <button class="theme-toggle" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+      </div>
     </div>
     <div class="tabs">
       <button class="tab active" data-tab="add" onclick="switchTab('add',this)">Add</button>
@@ -544,10 +560,10 @@ function renderBarChart(){
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{labels:{color:'#999',font:{size:12},boxWidth:12}}},
+      plugins:{legend:{labels:{color:chartTextColor(),font:{size:12},boxWidth:12}}},
       scales:{
-        x:{ticks:{color:'#666',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}},
-        y:{ticks:{color:'#666',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}}
+        x:{ticks:{color:chartTextColor(),font:{size:11}},grid:{color:chartGridColor()}},
+        y:{ticks:{color:chartTextColor(),font:{size:11}},grid:{color:chartGridColor()}}
       }
     }
   });
@@ -624,6 +640,36 @@ function updateHeaderCount(){
   document.getElementById('hdr-count').textContent=st.entries.length?st.entries.length+' entries':'';
 }
 
+// ── Theme ──────────────────────────────────────────────
+function initTheme(){
+  const saved=localStorage.getItem('theme');
+  const isDark = saved ? saved==='dark' : true;
+  applyTheme(isDark?'dark':'light',false);
+}
+function applyTheme(theme, save=true){
+  const isLight=theme==='light';
+  document.documentElement.classList.toggle('light',isLight);
+  document.getElementById('theme-btn').textContent=isLight?'🌑':'🌙';
+  // update meta theme-color
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.content=isLight?'#f5f5f5':'#0f0f0f';
+  if(save)localStorage.setItem('theme',theme);
+  // re-render charts if visible
+  if(!document.getElementById('tab-charts').classList.contains('hidden')){
+    renderCharts();
+  }
+}
+function toggleTheme(){
+  const isLight=document.documentElement.classList.contains('light');
+  applyTheme(isLight?'dark':'light');
+}
+function chartTextColor(){
+  return document.documentElement.classList.contains('light')?'#888':'#666';
+}
+function chartGridColor(){
+  return document.documentElement.classList.contains('light')?'rgba(0,0,0,0.06)':'rgba(255,255,255,0.05)';
+}
+
 // ── PWA Install ────────────────────────────────────────
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{
@@ -651,6 +697,7 @@ if('serviceWorker' in navigator)
 
 // ── Init ───────────────────────────────────────────────
 load();
+initTheme();
 document.getElementById('f-date').value=today();
 renderTagSelector();renderFilterTag();updateHeaderCount();
 </script>
